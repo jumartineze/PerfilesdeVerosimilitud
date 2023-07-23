@@ -1,4 +1,6 @@
-![](Apps%20Shiny/www/Logo.png | width=100)
+<p align="center">
+<img src="Apps%20Shiny/www/Logo.png" width="400">
+</p>
 
 # VerosimilitudLabs
 
