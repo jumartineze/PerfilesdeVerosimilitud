@@ -1,0 +1,92 @@
+# Lógica del servidor ----
+server <- function(input, output) {
+  
+  # Sección de ayuda ----
+  observe_helpers()
+  
+  # Leer el contenido del archivo .txt ----
+  codigoserver <- reactive({
+    codigo_texto <- readLines("www/Codigo/Perfiles/server.txt", warn=FALSE)
+    return(paste(codigo_texto, collapse = "\n"))
+  })
+  
+  codigoui <- reactive({
+    codigo_texto <- readLines("www/Codigo/Perfiles/ui.txt", warn=FALSE)
+    return(paste(codigo_texto, collapse = "\n"))
+  })
+  
+  # Mostrar el código en el cuadro de texto ----
+  output$serverOutput <- renderPrint({
+    cat(codigoserver())
+  })
+  
+  output$uiOutput <- renderPrint({
+    cat(codigoui())
+  })
+  
+  # Panel parámetros dinámicos ----
+  output$parametros <- renderUI({
+    
+    if (input$distribucion == 1) { # Para distribución Normal
+      tagList (
+        withMathJax(),
+        selectInput("perfilVN", label = "Perfil de verosimilitud", choices =  c("Media" = 1, "Varianza" = 2)),
+        withMathJax(),
+        numericInput("muN", label = "\\(\\mu\\)", value = 0),
+        numericInput("sigmaN", label = "\\(\\sigma^2\\)", value = 1, min = 1)
+      )
+    } 
+    else if (input$distribucion == 2) { # Para distribución Log-Normal
+      tagList (
+        withMathJax(),
+        selectInput("perfilVLN", label = "Perfil de verosimilitud", choices = c("μ" = 1,  "σ²" = 2)), 
+        withMathJax(),
+        numericInput("muL", label = "\\(\\mu\\)", value = 1, min = 1),
+        numericInput("sigmaL", label = "\\(\\sigma^2\\)", value = 2, min = 2)
+      )
+    }
+    else { # Para distribución Exponencial
+      tagList(
+        selectInput("perfilVE", label = "Perfil de verosimilitud", choices = c("Media" = 1)), 
+        withMathJax(),
+        numericInput("beta", label = "\\(\\beta\\)", value = 1, min = 1)
+      )
+    }
+  })
+  
+  # Gráficos perfiles de verosimilitud ----
+  output$plotPerfilV <- renderPlot ({
+    if (is.null(input$distribucion) || is.null(input$n)) {
+      return(NULL)
+    }
+    
+    if (input$distribucion == 1) {
+      if (is.null(input$muN) || is.null(input$sigmaN)) {
+        return(NULL)
+      }
+      
+      muestra <- rnorm(n = input$n, mean = input$muN, sd = input$sigmaN)
+      if (input$perfilVN == 1) {mvMediaN(muestra)}
+      else if (input$perfilVN == 2) {mvVarianzaN(muestra)}
+    }
+    
+    else if (input$distribucion == 2) {
+      if (is.null(input$muL) || is.null(input$sigmaL)) {
+        return(NULL)
+      }
+      
+      muestra <- rlnorm(n = input$n, mean = input$muL, sd = input$sigmaL)
+      if (input$perfilVLN == 1) {mvMediaLN(muestra)}
+      else if (input$perfilVLN == 2) {mvVarianzaLN(muestra)}
+    }
+    
+    else if (input$distribucion == 3) {
+      if (is.null(input$beta)) {
+        return(NULL)
+      }
+      
+      muestra <- rexp(n = input$n, rate = 1/input$beta)
+      mvMediaE(muestra)
+    }
+  })
+}

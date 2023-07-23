@@ -1,0 +1,136 @@
+# Interfaz de usuario ----
+ui <- fixedPage(
+  
+  # Configuraciones de visualización ----
+  tags$style("body {
+              -moz-transform: scale(0.8, 0.8); /* Moz-browsers */
+              zoom: 0.8; /* Other non-webkit browsers */
+              zoom: 80%; /* Webkit browsers */
+              }"),
+  
+  fluidRow(
+    
+    # Título Principal ----
+    titlePanel(h1("Intervalos de Verosimilitud", align = "center",
+                  style = "font-family: Arial Black;
+                color: #15297c;
+                border: 2px solid LightGray;
+                border-radius: 5px;
+                padding: 20px")), 
+    
+    # Panel lateral ----
+    column(4, 
+      
+      # Imágenes panel lateral
+      tags$figure(
+        tags$img(src = "Logo.png", height = 130), align = "center"),
+      
+      # Título
+      h4("Modifica tus parámetros", align = "center", 
+         style = "font-family: Arial Black; color: #15297c; padding: 5px"),
+      
+      # Panel ----
+      wellPanel(
+        style = "background-color : White; border: 2px solid LightGray",
+        
+        # Parámetros modificables ----
+        
+        # Cargar base de datos
+        fileInput("file", "Carga la Base de Datos") %>%
+          helper(buttonLabel = "Volver",
+                 colour = "#2898EE",
+                 type = "markdown",
+                 content = "Intervalos/AyudaPaso1")),
+      
+      # Panel selección de variable
+      uiOutput("panelVar"),
+      
+      # Panel selección prueba de bondad de ajuste 
+      uiOutput("panelPrueba"),
+      
+      # Selección parámetros gráfico 
+      uiOutput("panelParam"),
+    ),
+    
+    # Panel principal ----
+    column(8,
+      
+      # Menú ----     
+      tabsetPanel(
+        type = "pills",
+        
+        # Secciones del menú ----
+        
+        tabPanel(
+          title = "Nuestro Equipo",
+          icon = icon("people-group", lib = "font-awesome"),
+          includeMarkdown("www/Complementos/NuestroEquipo.md")
+        ),
+        
+        tabPanel(
+          title = "Resultados", 
+          icon = icon("square-poll-vertical", lib = "font-awesome"),
+          verbatimTextOutput("prueba"),
+          tags$head(tags$style("#prueba{color: black;
+                                 font-size: 14px;
+                                 font-family: Helvetica;
+                                 font-weight: bold;
+                                 background-color : White; 
+                                 border: 2px solid LightGray
+                                 }")),
+          plotOutput("plotPerfilV", width = "100%", height = "600px")),
+        
+        tabPanel(
+          title="Teoría Aplicada", 
+          icon=icon("circle-info", lib = "font-awesome"),
+          
+          tabsetPanel(
+            type = "tabs",
+            
+            tabPanel(
+              title = "Preguntas Frecuentes",
+              tags$figure(
+                tags$img(src="Teoria/Perfiles/Preguntas.png", width = "110%"), align = "center")),
+            
+            tabPanel(
+              title = "Normal",
+              tags$figure(
+                tags$img(src="Teoria/Perfiles/DistNormal.png", width = "110%"), align = "center")),
+            
+            tabPanel(
+              title = "Log-Normal",
+              tags$figure(
+                tags$img(src="Teoria/Perfiles/DistLogNormal.png", width = "110%"), align = "center")),
+            
+            tabPanel(
+              title = "Exponencial",
+              tags$figure(
+                tags$img(src="Teoria/Perfiles/DistExp.png", width = "110%"), align = "center"))
+          )
+        ),
+             
+        tabPanel(
+          title = "Código Fuente",
+          icon = icon("github", lib = "font-awesome"),
+          
+          tabsetPanel(
+            type = "tabs",
+            
+            tabPanel(
+              title = "Repositorio",
+              align="center",
+              includeMarkdown("www/Complementos/GitHub.md")),
+            
+            tabPanel(
+              title = "server",
+              verbatimTextOutput("serverOutput")),
+            
+            tabPanel(
+              title = "ui",
+              verbatimTextOutput("uiOutput"))
+          )
+        )
+      )
+    )
+  )
+)

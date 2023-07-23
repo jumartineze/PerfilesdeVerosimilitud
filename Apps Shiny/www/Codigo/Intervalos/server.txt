@@ -1,0 +1,151 @@
+# Lógica del servidor ----
+server <- function(input, output) {
+  
+  # Sección de ayuda ----
+  observe_helpers()
+  
+  # Leer el contenido del archivo .txt ----
+  codigoserver <- reactive({
+    codigo_texto <- readLines("www/Codigo/Intervalos/server.txt", warn=FALSE)
+    return(paste(codigo_texto, collapse = "\n"))
+  })
+  
+  codigoui <- reactive({
+    codigo_texto <- readLines("www/Codigo/Intervalos/ui.txt", warn=FALSE)
+    return(paste(codigo_texto, collapse = "\n"))
+  })
+  
+  # Mostrar el código en el cuadro de texto ----
+  output$serverOutput <- renderPrint({
+    cat(codigoserver())
+  })
+  
+  output$uiOutput <- renderPrint({
+    cat(codigoui())
+  })
+
+  # Verifica si ya se cargó una base de datos ----
+  filedata <- reactive ({
+    infile <- input$file
+    if (is.null(infile)) {
+      return(NULL)      
+    }
+    else{read.csv(infile$datapath)}
+  })
+  
+  # Panel selección de variable
+  output$panelVar <- renderUI ({
+    if (is.null(filedata())) {
+      return(NULL)
+    } 
+    else {
+      wellPanel(
+        style = "background-color : White; border: 2px solid LightGray",
+        selectInput("variable", label = "Selecciona la Variable", choices =  c("Ninguna", names(filedata()))) %>%
+          helper(buttonLabel = "Volver",
+                 colour = "#2898EE",
+                 type = "markdown",
+                 content = "Intervalos/AyudaPaso2")
+      )}})
+  
+  # Panel selección prueba de bondad de ajuste
+  output$panelPrueba <- renderUI ({
+    if (input$variable == "Ninguna" || is.null(input$variable) || is.null(filedata())) {
+      return(NULL)
+    } else {
+      wellPanel(
+        style = "background-color : White; border: 2px solid LightGray",
+        selectInput("distribucion", label = "Prueba de Bondad de Ajuste" , 
+                    choices = c("Ninguna" = 0, "Normal" = "pnorm", "Log-normal" = "plnorm", "Exponencial" = "pexp")) %>%
+          helper(buttonLabel = "Volver",
+                 colour = "#2898EE",
+                 type = "markdown",
+                 content = "Intervalos/AyudaPaso3")
+      )}})
+  
+  # Prueba bondad de ajuste
+  test <- reactive({
+    if (input$distribucion == 0 || is.null(input$distribucion) ||
+        input$variable == "Ninguna" || is.null(input$variable) || is.null(filedata())) {
+      return(NULL)
+    }
+    datos <- filedata()[input$variable]
+    if (input$distribucion == "pnorm") {
+      ajuste <- fitdistr(unlist(datos), "normal")
+      ks.test(datos, input$distribucion, mean = ajuste$estimate[1], sd = ajuste$estimate[2])
+    } else if (input$distribucion == "plnorm") {
+      ajuste <- fitdistr(unlist(datos), "lognormal")
+      ks.test(datos, input$distribucion, meanlog = ajuste$estimate[1], sdlog = ajuste$estimate[2])
+    } else if (input$distribucion == "pexp") {
+      ajuste <- fitdistr(unlist(datos), "exponential")
+      ks.test(datos, input$distribucion, rate = ajuste$estimate[1])
+    }
+  })
+  
+  # Resultados prueba bondad de ajuste
+  output$prueba <- renderText ({
+    if (input$distribucion == 0 || is.null(input$distribucion) ||
+        input$variable == "Ninguna" || is.null(input$variable) || is.null(filedata())) {
+      return(NULL)
+    } else {
+      
+      if (input$distribucion == "pnorm") {aux1 <- "Normalidad"}
+      else if (input$distribucion == "plnorm") {aux1 <- "Log-Normalidad"}
+      else if (input$distribucion == "pexp") {aux1 <- "Exponencialidad"}
+      
+      if (test()$p.value > 0.05) {aux2 <- paste("\nSus datos poseen una distribución de", aux1)}
+      else {aux2 <- paste("\nSus datos NO poseen una distribución de", aux1,
+                   "\nPruebe con otra variable o distribución para la prueba de bondad de ajuste")}
+
+      paste("Prueba de bondad de ajuste:", aux1, 
+            "\n Método: Kolmogorov-Smirnov Test",
+            "\n Estadístico W = ", round(test()$statistic, 5),
+            "\n Valor P = ", round(test()$p.value, 5),
+            "\n", aux2)
+    }
+  })
+  
+  # Selección parámetros gráfico
+  output$panelParam <- renderUI ({
+    if (input$distribucion == 0 || is.null(input$distribucion) || test()$p.value < 0.05 ||
+        input$variable == "Ninguna" || is.null(input$variable) || is.null(filedata())) {
+      return(NULL)
+    } else {
+      if (input$distribucion == "pnorm") {perfilV <- c("Media", "Varianza")}
+      else if (input$distribucion == "plnorm") {perfilV <- c("μ", "σ²")}
+      else if (input$distribucion == "pexp") {perfilV <- c("Media")}
+       
+      wellPanel(
+        style = "background-color : White; border: 2px solid LightGray",
+        selectInput("perfil", label = "Perfil de Verosimilitud", 
+                    choices = c("Ninguno" = 0, perfilV)) %>%
+          helper(buttonLabel = "Volver",
+                 colour = "#2898EE",
+                 type = "markdown",
+                 content = "Intervalos/AyudaPaso4"),
+        
+        numericInput("alpha", label = "Nivel de Significancia", value = 0.05,
+                     min = 0.01, max = 1, step = 0.01),
+      )}})
+  
+  # Gráficos intervalos de verosimilitud ----
+  output$plotPerfilV <- renderPlot ({
+    if (is.null(filedata()) || input$variable == "Ninguna" || input$distribucion == 0 || input$perfil == 0 ||
+        is.null(input$variable) || is.null(input$distribucion) || is.null(input$perfil) || test()$p.value < 0.05) {
+      return(NULL)
+    }
+    
+    muestra <- filedata()[input$variable]
+    if (input$distribucion == "pnorm") {
+      if (input$perfil == "Media") {icMediaN(unlist(muestra), alpha = input$alpha)}
+      else if (input$perfil == "Varianza") {icVarianzaN(unlist(muestra), alpha = input$alpha)}
+    } 
+    else if (input$distribucion == "plnorm") {
+      if (input$perfil == "μ") {icMediaLN(unlist(muestra), alpha = input$alpha)}
+      else if (input$perfil == "σ²") {icVarianzaLN(unlist(muestra), alpha = input$alpha)}
+    }
+    else if (input$distribucion == "pexp") {
+      icMediaE(unlist(muestra), alpha = input$alpha)
+    }
+  })
+}

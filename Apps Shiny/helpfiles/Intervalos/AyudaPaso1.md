@@ -1,0 +1,9 @@
+Los gráficos generados se encontrarán en la sección **Resultados**.
+
+------------------------------------------------------------------------
+
+## Paso 1
+
+------------------------------------------------------------------------
+
+Seleccione su base de datos. Esta debe estar en formato **csv**, cada variable debe estar representada por una columna.
