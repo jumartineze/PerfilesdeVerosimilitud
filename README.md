@@ -1,3 +1,5 @@
+![](Apps Shiny/www/Logo.png){align="left" style="border: 4px solid; margin-right: 1.5rem" width="200"}
+
 # VerosimilitudLabs
 
 Este repositorio alberga el código fuente de dos aplicaciones interactivas relacionadas con el concepto de verosimilitud en estadística. Ambas aplicaciones se enfocan en brindar una experiencia didáctica y visual sobre dos aspectos fundamentales: perfiles de verosimilitud e intervalos de verosimilitud.
