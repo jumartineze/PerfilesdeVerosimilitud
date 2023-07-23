@@ -1,4 +1,4 @@
-![](Apps%20Shiny/www/Logo.png){align="left" style="border: 4px solid; margin-right: 1.5rem" width="10"}
+![](Apps%20Shiny/www/Logo.png | width=100)
 
 # VerosimilitudLabs
 
