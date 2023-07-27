@@ -198,10 +198,10 @@ mvVarianzaLN <- function(x, li, ls, alpha) {
   y_ic <- c(0, R_varianza(seq(li, ls, by=(ls-li)/1000)), 0)
   
   p <- exp(-1 * qchisq( 1 - alpha, df = 1)/2)
-  titulo <- "Intervalo de confianza máximo verosimil para σ²"
+  titulo <- "Intervalo de confianza máximo verosimil para σ"
   xlim <- c(li - (ls-li)/4, ls + (ls-li)/4)
   
-  grafico(sqrt(s2_x_barra), eje_x, eje_y, titulo, xlim, li, ls, x_ic, y_ic, p, alpha, "σ²")
+  grafico(sqrt(s2_x_barra), eje_x, eje_y, titulo, xlim, li, ls, x_ic, y_ic, p, alpha, "σ")
 }
 
 icVarianzaLN <- function(x, alpha) {

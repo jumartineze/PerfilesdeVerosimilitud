@@ -98,7 +98,7 @@ mvVarianzaLN <- function(x) {
   # Función de verosimilitud relativa
   n <- length(x)
   x_barra <- mean(log(x))
-  s2_x_barra <- (n-1)/n * var(log(x))
+  s2_x_barra <- sqrt((n-1)/n * var(log(x)))
   
   R_varianza <- function(varianza) {
     return(exp(n/2 * (log(s2_x_barra/varianza) + 1-s2_x_barra/varianza))) 
@@ -113,8 +113,8 @@ mvVarianzaLN <- function(x) {
   eje_y <- R_varianza(eje_x)
   
   # Gráfico
-  grafico(s2_x_barra, eje_x, eje_y, "Perfil de Verosimilitud para el parámetro σ²", 
-          c(0, x_max), "σ²")
+  grafico(s2_x_barra, eje_x, eje_y, "Perfil de Verosimilitud para el parámetro σ", 
+          c(0, x_max), "σ")
 }
 
 # Verosimilitud Media Exponencial ----
