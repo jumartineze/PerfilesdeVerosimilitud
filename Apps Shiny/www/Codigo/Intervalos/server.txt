@@ -112,7 +112,7 @@ server <- function(input, output) {
       return(NULL)
     } else {
       if (input$distribucion == "pnorm") {perfilV <- c("Media", "Varianza")}
-      else if (input$distribucion == "plnorm") {perfilV <- c("μ", "σ²")}
+      else if (input$distribucion == "plnorm") {perfilV <- c("μ", "σ")}
       else if (input$distribucion == "pexp") {perfilV <- c("Media")}
        
       wellPanel(
@@ -142,7 +142,7 @@ server <- function(input, output) {
     } 
     else if (input$distribucion == "plnorm") {
       if (input$perfil == "μ") {icMediaLN(unlist(muestra), alpha = input$alpha)}
-      else if (input$perfil == "σ²") {icVarianzaLN(unlist(muestra), alpha = input$alpha)}
+      else if (input$perfil == "σ") {icVarianzaLN(unlist(muestra), alpha = input$alpha)}
     }
     else if (input$distribucion == "pexp") {
       icMediaE(unlist(muestra), alpha = input$alpha)

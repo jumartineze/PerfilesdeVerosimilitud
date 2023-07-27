@@ -36,7 +36,10 @@ ui <- fixedPage(
         # Parámetros modificables ----
         
         # Cargar base de datos
-        fileInput("file", "Carga la Base de Datos") %>%
+        fileInput("file", "Carga la Base de Datos", 
+                  accept = ".csv",
+                  buttonLabel = "Buscar...",
+                  placeholder = "Ningún archivo seleccionado") %>%
           helper(buttonLabel = "Volver",
                  colour = "#2898EE",
                  type = "markdown",
@@ -90,22 +93,22 @@ ui <- fixedPage(
             tabPanel(
               title = "Preguntas Frecuentes",
               tags$figure(
-                tags$img(src="Teoria/Perfiles/Preguntas.png", width = "110%"), align = "center")),
+                tags$img(src="Teoria/Intervalos/Preguntas.png", width = "110%"), align = "center")),
             
             tabPanel(
               title = "Normal",
               tags$figure(
-                tags$img(src="Teoria/Perfiles/DistNormal.png", width = "110%"), align = "center")),
+                tags$img(src="Teoria/Intervalos/DistNormal.png", width = "110%"), align = "center")),
             
             tabPanel(
               title = "Log-Normal",
               tags$figure(
-                tags$img(src="Teoria/Perfiles/DistLogNormal.png", width = "110%"), align = "center")),
+                tags$img(src="Teoria/Intervalos/DistLogNormal.png", width = "110%"), align = "center")),
             
             tabPanel(
               title = "Exponencial",
               tags$figure(
-                tags$img(src="Teoria/Perfiles/DistExp.png", width = "110%"), align = "center"))
+                tags$img(src="Teoria/Intervalos/DistExp.png", width = "110%"), align = "center"))
           )
         ),
              
