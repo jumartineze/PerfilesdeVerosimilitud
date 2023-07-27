@@ -4,6 +4,7 @@ library(shiny)
 library(MASS)
 library(magrittr)
 library(shinyhelper)
+library(ggplot2)
 
 # Importar Funciones para gráficos ----
 
@@ -48,7 +49,10 @@ ui <- fixedPage(
         # Parámetros modificables ----
         
         # Cargar base de datos
-        fileInput("file", "Carga la Base de Datos") %>%
+        fileInput("file", "Carga la Base de Datos", 
+                  accept = ".csv",
+                  buttonLabel = "Buscar...",
+                  placeholder = "Ningún archivo seleccionado") %>%
           helper(buttonLabel = "Volver",
                  colour = "#2898EE",
                  type = "markdown",
@@ -102,22 +106,22 @@ ui <- fixedPage(
             tabPanel(
               title = "Preguntas Frecuentes",
               tags$figure(
-                tags$img(src="Teoria/Perfiles/Preguntas.png", width = "110%"), align = "center")),
+                tags$img(src="Teoria/Intervalos/Preguntas.png", width = "110%"), align = "center")),
             
             tabPanel(
               title = "Normal",
               tags$figure(
-                tags$img(src="Teoria/Perfiles/DistNormal.png", width = "110%"), align = "center")),
+                tags$img(src="Teoria/Intervalos/DistNormal.png", width = "110%"), align = "center")),
             
             tabPanel(
               title = "Log-Normal",
               tags$figure(
-                tags$img(src="Teoria/Perfiles/DistLogNormal.png", width = "110%"), align = "center")),
+                tags$img(src="Teoria/Intervalos/DistLogNormal.png", width = "110%"), align = "center")),
             
             tabPanel(
               title = "Exponencial",
               tags$figure(
-                tags$img(src="Teoria/Perfiles/DistExp.png", width = "110%"), align = "center"))
+                tags$img(src="Teoria/Intervalos/DistExp.png", width = "110%"), align = "center"))
           )
         ),
              
@@ -261,7 +265,7 @@ server <- function(input, output) {
       return(NULL)
     } else {
       if (input$distribucion == "pnorm") {perfilV <- c("Media", "Varianza")}
-      else if (input$distribucion == "plnorm") {perfilV <- c("μ", "σ²")}
+      else if (input$distribucion == "plnorm") {perfilV <- c("μ", "σ")}
       else if (input$distribucion == "pexp") {perfilV <- c("Media")}
        
       wellPanel(
@@ -291,7 +295,7 @@ server <- function(input, output) {
     } 
     else if (input$distribucion == "plnorm") {
       if (input$perfil == "μ") {icMediaLN(unlist(muestra), alpha = input$alpha)}
-      else if (input$perfil == "σ²") {icVarianzaLN(unlist(muestra), alpha = input$alpha)}
+      else if (input$perfil == "σ") {icVarianzaLN(unlist(muestra), alpha = input$alpha)}
     }
     else if (input$distribucion == "pexp") {
       icMediaE(unlist(muestra), alpha = input$alpha)

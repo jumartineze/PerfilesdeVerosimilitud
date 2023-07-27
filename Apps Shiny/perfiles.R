@@ -53,9 +53,8 @@ ui <- fixedPage(
         
         # Parámetros modificables ----
         
-        # Barra ingreso numero de muestra
-        chooseSliderSkin("Flat", color = "#2898ee"),
-        sliderInput("n", label = "Tamaño de muestra", min = 2, max = 100, value = 50), 
+        # Selección tamaño de muestra
+        numericInput("n", label = "Tamaño de muestra", min = 2, max = 100, value = 50),
         
         # Barra selección de distribución
         selectInput("distribucion", label = "Distribución", 
@@ -186,10 +185,10 @@ server <- function(input, output) {
     else if (input$distribucion == 2) { # Para distribución Log-Normal
       tagList (
         withMathJax(),
-        selectInput("perfilVLN", label = "Perfil de verosimilitud", choices = c("μ" = 1,  "σ²" = 2)), 
+        selectInput("perfilVLN", label = "Perfil de verosimilitud", choices = c("μ" = 1,  "σ" = 2)), 
         withMathJax(),
         numericInput("muL", label = "\\(\\mu\\)", value = 1, min = 1),
-        numericInput("sigmaL", label = "\\(\\sigma^2\\)", value = 2, min = 2)
+        numericInput("sigmaL", label = "\\(\\sigma\\)", value = 2, min = 2)
       )
     }
     else { # Para distribución Exponencial
