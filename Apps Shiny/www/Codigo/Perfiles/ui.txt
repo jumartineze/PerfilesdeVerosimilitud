@@ -39,9 +39,8 @@ ui <- fixedPage(
         
         # Parámetros modificables ----
         
-        # Barra ingreso numero de muestra
-        chooseSliderSkin("Flat", color = "#2898ee"),
-        sliderInput("n", label = "Tamaño de muestra", min = 2, max = 100, value = 50), 
+        # Selección tamaño de muestra
+        numericInput("n", label = "Tamaño de muestra", min = 2, max = 100, value = 50),
         
         # Barra selección de distribución
         selectInput("distribucion", label = "Distribución", 
